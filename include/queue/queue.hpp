@@ -9,11 +9,13 @@ struct QueueOptions {
     std::optional<int> capacity;
 };
 
+using Task = std::function<void()>;
+
 class IQueue {
 public:
     virtual ~IQueue() = default;
-    virtual void push(std::function<void()> task) = 0;
-    virtual std::optional<std::function<void()>> try_pop() = 0;
+    virtual void push(Task task) = 0;
+    virtual std::optional<Task> try_pop() = 0;
 };
 
 }  // namespace dispatcher::queue
