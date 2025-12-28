@@ -1,6 +1,7 @@
 #pragma once
 #include "queue/queue.hpp"
 #include <atomic>
+#include <vector>
 
 namespace dispatcher::queue {
 
@@ -18,6 +19,7 @@ private:
     std::vector<Task> data_;
     alignas(std::hardware_destructive_interference_size) std::atomic<size_t> back_{0};
     alignas(std::hardware_destructive_interference_size) std::atomic<size_t> front_{0};
+    alignas(std::hardware_destructive_interference_size) std::atomic<size_t> size_{0};
 };
 
 }  // namespace dispatcher::queue
