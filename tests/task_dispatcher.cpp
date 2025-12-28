@@ -6,6 +6,7 @@
 #include <future>
 #include <mutex>
 #include <stdexcept>
+#include <thread>
 #include <vector>
 
 #include "task_dispatcher.hpp"
@@ -110,4 +111,28 @@ TEST(TaskDispatcherTest, ConstructorThrowsOnInvalidBoundedCapacity) {
     config.emplace(TaskPriority::High, QueueOptions{.bounded = true, .capacity = 0});
     config.emplace(TaskPriority::Normal, QueueOptions{.bounded = false});
     EXPECT_THROW(TaskDispatcher dispatcher(1, config), std::invalid_argument);
+}
+
+TEST(TaskDispatcherTest, DestructorDrainsQueuedTasks) {
+    using namespace std::chrono_literals;
+
+    std::atomic<int> completed{0};
+    std::promise<void> started;
+    auto started_future = started.get_future();
+
+    {
+        TaskDispatcher dispatcher(1, MakeUnboundedConfig());
+
+        dispatcher.schedule(TaskPriority::Normal, [&] {
+            started.set_value();
+            std::this_thread::sleep_for(100ms);
+            completed.fetch_add(1, std::memory_order_relaxed);
+        });
+
+        dispatcher.schedule(TaskPriority::Normal, [&] { completed.fetch_add(1, std::memory_order_relaxed); });
+
+        ASSERT_EQ(started_future.wait_for(200ms), std::future_status::ready);
+    }
+
+    EXPECT_EQ(completed.load(std::memory_order_relaxed), 2);
 }

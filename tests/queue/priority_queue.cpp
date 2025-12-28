@@ -95,3 +95,26 @@ TEST(PriorityQueueTest, ShutdownUnblocksPopAndRejectsPush) {
     EXPECT_FALSE(queue.pop().has_value());
     EXPECT_EQ(value, 0);
 }
+
+TEST(PriorityQueueTest, PopBlocksWhenBoundedQueueIsEmptyAfterDrop) {
+    using namespace std::chrono_literals;
+
+    Config config;
+    config.emplace(TaskPriority::High, QueueOptions{.bounded = true, .capacity = 1});
+    config.emplace(TaskPriority::Normal, QueueOptions{.bounded = false});
+    PriorityQueue queue(config);
+
+    queue.push(TaskPriority::High, [] {});
+    queue.push(TaskPriority::High, [] {});
+
+    auto first = queue.pop();
+    ASSERT_TRUE(first.has_value());
+    std::invoke(first.value());
+
+    auto future = std::async(std::launch::async, [&queue] { return queue.pop(); });
+    EXPECT_EQ(future.wait_for(50ms), std::future_status::timeout);
+
+    queue.shutdown();
+    auto second = future.get();
+    EXPECT_FALSE(second.has_value());
+}
