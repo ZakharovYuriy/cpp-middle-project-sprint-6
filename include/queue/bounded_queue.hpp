@@ -9,7 +9,7 @@ class BoundedQueue : public IQueue {
 public:
     explicit BoundedQueue(int capacity);
 
-    void push(Task task) override;
+    bool push(Task task) override;
 
     std::optional<Task> try_pop() override;
 

@@ -9,7 +9,7 @@ class UnboundedQueue : public IQueue {
 public:
     explicit UnboundedQueue() = default;
 
-    void push(std::function<void()> task) override;
+    bool push(std::function<void()> task) override;
 
     std::optional<std::function<void()>> try_pop() override;
 

@@ -25,7 +25,10 @@ void PriorityQueue::push(TaskPriority priority, Task task) {
     if (!active_)
         return;
 
-    queues_.at(priority)->push(std::move(task));
+    const bool pushed = queues_.at(priority)->push(std::move(task));
+    if (!pushed) {
+        return;
+    }
     ++size_;
 
     //

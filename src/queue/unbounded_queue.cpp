@@ -1,13 +1,11 @@
 #include "queue/unbounded_queue.hpp"
 
-#include <functional>
 #include <mutex>
 #include <queue>
-#include <semaphore>
 
 namespace dispatcher::queue {
 
-void UnboundedQueue::push(Task task) {
+bool UnboundedQueue::push(Task task) {
     // Блокируем доступ к очереди для других потоков
     std::lock_guard lock(mutex_);
 
@@ -15,6 +13,7 @@ void UnboundedQueue::push(Task task) {
     data_.push(std::move(task));
 
     // Перед выходом из метода вызовется деструктор объекта lock, и блокировка доступа к очереди будет снята
+    return true;
 }
 
 std::optional<Task> UnboundedQueue::try_pop() {

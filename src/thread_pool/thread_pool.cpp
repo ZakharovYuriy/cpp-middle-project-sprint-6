@@ -1,5 +1,8 @@
 #include "thread_pool/thread_pool.hpp"
 
+#include <cstdio>
+#include <exception>
+
 namespace dispatcher::thread_pool {
 
 ThreadPool::ThreadPool(std::shared_ptr<queue::PriorityQueue> priorityQueue, size_t threads)
@@ -11,18 +14,21 @@ ThreadPool::ThreadPool(std::shared_ptr<queue::PriorityQueue> priorityQueue, size
 }
 void ThreadPool::push(TaskPriority priority, queue::Task task) { priorityQueue_->push(priority, std::move(task)); }
 
-ThreadPool::~ThreadPool() {
-    stop_ = true;
-    priorityQueue_->shutdown();
-}
+ThreadPool::~ThreadPool() { priorityQueue_->shutdown(); }
 
 void ThreadPool::worker() {
-    while (!stop_) {
+    while (true) {
         auto task = priorityQueue_->pop();
-        if (task.has_value()) {
+        if (!task.has_value()) {
+            return;
+        }
+
+        try {
             std::invoke(task.value());
-        } else {
-            std::this_thread::yield();
+        } catch (const std::exception &ex) {
+            std::fprintf(stderr, "Task execution failed: %s\n", ex.what());
+        } catch (...) {
+            std::fprintf(stderr, "Task execution failed: unknown exception\n");
         }
     }
 }

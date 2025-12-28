@@ -1,6 +1,8 @@
 #pragma once
 #include "queue/priority_queue.hpp"
+#include <memory>
 #include <thread>
+#include <vector>
 
 namespace dispatcher::thread_pool {
 
@@ -17,7 +19,6 @@ private:
     void worker();
 
 private:
-    std::atomic<bool> stop_;
     std::shared_ptr<queue::PriorityQueue> priorityQueue_;
     std::vector<std::jthread> workers_;
 };

@@ -14,7 +14,7 @@ using Task = std::function<void()>;
 class IQueue {
 public:
     virtual ~IQueue() = default;
-    virtual void push(Task task) = 0;
+    virtual bool push(Task task) = 0;
     virtual std::optional<Task> try_pop() = 0;
 };
 
