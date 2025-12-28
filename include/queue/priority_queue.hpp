@@ -14,10 +14,9 @@
 #include <unordered_map>
 
 namespace dispatcher::queue {
+using Config = std::unordered_map<TaskPriority, QueueOptions>;
 
 class PriorityQueue {
-    using Config = std::unordered_map<TaskPriority, QueueOptions>;
-
 public:
     explicit PriorityQueue(const Config &config);
 
@@ -35,7 +34,7 @@ private:
     std::mutex mutex_;
     std::condition_variable not_empty_;
     bool active_ = true;
-    std::atomic<size_t> size_ = 0;
+    size_t size_ = 0;
 };
 
 }  // namespace dispatcher::queue
