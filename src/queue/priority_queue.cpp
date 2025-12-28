@@ -67,4 +67,6 @@ void PriorityQueue::shutdown() {
     not_empty_.notify_all();
 }
 
+PriorityQueue::~PriorityQueue() { shutdown(); }
+
 }  // namespace dispatcher::queue

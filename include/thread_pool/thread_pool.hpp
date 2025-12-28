@@ -5,6 +5,7 @@
 namespace dispatcher::thread_pool {
 
 class ThreadPool {
+public:
     ThreadPool(std::shared_ptr<queue::PriorityQueue> priorityQueue,
                size_t threads = std::thread::hardware_concurrency());
 

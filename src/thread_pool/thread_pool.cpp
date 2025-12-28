@@ -11,7 +11,10 @@ ThreadPool::ThreadPool(std::shared_ptr<queue::PriorityQueue> priorityQueue, size
 }
 void ThreadPool::push(TaskPriority priority, queue::Task task) { priorityQueue_->push(priority, std::move(task)); }
 
-ThreadPool::~ThreadPool() { stop_ = true; }
+ThreadPool::~ThreadPool() {
+    stop_ = true;
+    priorityQueue_->shutdown();
+}
 
 void ThreadPool::worker() {
     while (!stop_) {

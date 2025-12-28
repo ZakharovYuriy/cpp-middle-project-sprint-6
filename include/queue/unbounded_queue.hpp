@@ -7,7 +7,7 @@ namespace dispatcher::queue {
 
 class UnboundedQueue : public IQueue {
 public:
-    explicit UnboundedQueue();
+    explicit UnboundedQueue() = default;
 
     void push(std::function<void()> task) override;
 
