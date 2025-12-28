@@ -32,6 +32,23 @@
             "group": {
                 "kind": "build"
             }
+        },
+        {
+            "label": "Run: dispatcher (Debug)",
+            "type": "shell",
+            "command": [
+                "cd ${workspaceFolder}/build &&",
+                "./dispatcher"
+            ],
+            "dependsOn": [
+                "GCC: Build Debug"
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "group": {
+                "kind": "test"
+            }
         }
     ]
 }

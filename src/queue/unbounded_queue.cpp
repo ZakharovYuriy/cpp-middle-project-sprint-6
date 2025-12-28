@@ -36,4 +36,6 @@ std::optional<Task> UnboundedQueue::try_pop() {
     return data;
 }
 
+UnboundedQueue::~UnboundedQueue() = default;
+
 }  // namespace dispatcher::queue

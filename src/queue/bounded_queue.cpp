@@ -22,4 +22,6 @@ std::optional<Task> BoundedQueue::try_pop() {
     front_.store(front, std::memory_order_release);
     return res;
 }
+
+BoundedQueue::~BoundedQueue() = default;
 }  // namespace dispatcher::queue
