@@ -1,18 +1,25 @@
 #pragma once
 #include "queue/queue.hpp"
+#include <atomic>
+#include <vector>
 
 namespace dispatcher::queue {
 
 class BoundedQueue : public IQueue {
-    // здесь ваш код
 public:
     explicit BoundedQueue(int capacity);
 
-    void push(std::function<void()> task) override;
+    bool push(Task task) override;
 
-    std::optional<std::function<void()>> try_pop() override;
+    std::optional<Task> try_pop() override;
 
     ~BoundedQueue() override;
+
+private:
+    std::vector<Task> data_;
+    alignas(std::hardware_destructive_interference_size) std::atomic<size_t> back_{0};
+    alignas(std::hardware_destructive_interference_size) std::atomic<size_t> front_{0};
+    alignas(std::hardware_destructive_interference_size) std::atomic<size_t> size_{0};
 };
 
 }  // namespace dispatcher::queue
